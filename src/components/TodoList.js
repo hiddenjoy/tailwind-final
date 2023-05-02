@@ -40,10 +40,10 @@ const TodoList = () => {
 
     // 할 일 목록을 newTodos 배열에 담기
     results.docs.forEach((doc) => {
-      // console.log(doc.data()); //확인 꼭 해보기
       // id값을 firestore에 저장한 값으로 지정하고, 나머지를 newTodos 배열에 담기
       newTodos.push({ id: doc.id, ...doc.data() });
     });
+    console.log(newTodos);
     setTodos(newTodos);
   };
 
@@ -57,22 +57,27 @@ const TodoList = () => {
   const addTodo = async () => {
     // 입력값이 비어있는 경우 함수를 종료합니다.
     if (input.trim() === "") return;
-    // 기존 할 일 목록에 새로운 할 일을 추가하고, 입력값을 초기화합니다.
-    // {
-    //   id: 할일의 고유 id,
-    //   text: 할일의 내용,
-    //   completed: 완료 여부,
-    // }
-    // ...todos => {id: 1, text: "할일1", completed: false}, {id: 2, text: "할일2", completed: false}}, ..
-
     // firestore에 추가한 할 일 저장하기.
+    const newDate = new Date();
+    const postDate =
+      newDate.toLocaleDateString() + " " + newDate.toLocaleTimeString("en-GB");
+
     const docRef = await addDoc(todoCollection, {
       text: input,
       completed: false,
+      datetime: postDate,
     });
-
     // id 값을 Firestore 에 저장한 값으로 지정합니다.
-    setTodos([...todos, { id: docRef.id, text: input, completed: false }]);
+    setTodos([
+      ...todos,
+      {
+        id: docRef.id,
+        text: input,
+        completed: false,
+        datetime: postDate,
+      },
+    ]);
+
     setInput("");
   };
 
@@ -85,7 +90,6 @@ const TodoList = () => {
         // Firestore 에서 해당 id를 가진 할 일을 찾아 완료 상태를 업데이트합니다.
         const todoDoc = doc(todoCollection, id);
         updateDoc(todoDoc, { completed: !todo.completed });
-        // ...todo => id: 1, text: "할일1", completed: false
         return { ...todo, completed: !todo.completed };
       } else {
         return todo;
@@ -93,22 +97,11 @@ const TodoList = () => {
     });
 
     setTodos(newTodos);
-
-    // setTodos(
-    //   // todos.map((todo) =>
-    //   //   todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    //   // )
-    //   // ...todo => id: 1, text: "할일1", completed: false
-    //   todos.map((todo) => {
-    //     return todo.id === id ? { ...todo, completed: !todo.completed } : todo;
-    //   })
-    // );
   };
 
   // deleteTodo 함수는 할 일을 목록에서 삭제하는 함수입니다.
   const deleteTodo = (id) => {
     // 해당 id를 가진 할 일을 제외한 나머지 목록을 새로운 상태로 저장합니다.
-    // setTodos(todos.filter((todo) => todo.id !== id));
 
     // firestore에서 해당 id를 가진 할 일 삭제하기
     const todoDoc = doc(todoCollection, id);
@@ -119,12 +112,10 @@ const TodoList = () => {
         return todo.id !== id;
       })
     );
+  };
 
-    // setTodos(
-    //   todos.filter((todo) => {
-    //     return todo.id !== id;
-    //   })
-    // );
+  const sortTodos = (a, b) => {
+    return a.datetime.replace(/\D/g, "") - b.datetime.replace(/\D/g, "");
   };
 
   // 컴포넌트를 렌더링합니다.
@@ -141,7 +132,7 @@ const TodoList = () => {
         onChange={(e) => setInput(e.target.value)}
       />
       {/* 할 일을 추가하는 버튼입니다. */}
-      <div class="grid">
+      <div className="grid">
         <button
           className="w-40 justify-self-end p-1 mb-4 bg-pink-500 text-white border border-pink-500 rounded hover:bg-white hover:text-pink-500"
           onClick={addTodo}
@@ -151,7 +142,7 @@ const TodoList = () => {
       </div>
       {/* 할 일 목록을 렌더링합니다. */}
       <ul>
-        {todos.map((todo) => (
+        {[...todos].sort(sortTodos).map((todo) => (
           <TodoItem
             key={todo.id}
             todo={todo}

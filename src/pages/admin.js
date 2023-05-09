@@ -9,6 +9,8 @@ export default function Home() {
     required: true,
     onUnauthenticated() {
       router.replace("/auth/signin");
+
+      alert("관리자만 접근할 수 있습니다.");
     },
   });
 

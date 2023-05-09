@@ -64,7 +64,9 @@ export default function Signin() {
                     bg-pink-500 text-white
                       border border-pink-500 rounded
                     hover:bg-white hover:text-pink-500`}
-            onClick={() => signIn()}
+            onClick={async () => {
+              await signIn();
+            }}
           >
             로그인 하기
           </button>

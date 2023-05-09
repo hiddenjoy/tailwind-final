@@ -28,7 +28,6 @@ const todoCollection = collection(db, "todos");
 const AdminTodoList = () => {
   // 상태를 관리하는 useState 훅을 사용하여 할 일 목록과 입력값을 초기화합니다.
   const [todos, setTodos] = useState([]);
-  const [input, setInput] = useState("");
 
   // firebase로 변경된 부분
   const getTodos = async () => {

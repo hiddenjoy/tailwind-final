@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import AdminList from "../components/AdminList";
@@ -9,10 +9,15 @@ export default function Home() {
     required: true,
     onUnauthenticated() {
       router.replace("/auth/signin");
-
-      alert("관리자만 접근할 수 있습니다.");
     },
   });
+
+  useEffect(() => {
+    if (data?.user.id !== "2781685147") {
+      alert("관리자만 접근할 수 있습니다.");
+      router.replace("/");
+    }
+  }, []);
 
   return (
     <div>

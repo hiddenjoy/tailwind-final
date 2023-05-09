@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from "react";
 import TodoItem from "@/components/TodoItem";
 import styles from "@/styles/TodoList.module.css";
+import { useSession } from "next-auth/react";
 
 //firebase 관련 모듈 불러오기
 import { db } from "@/firebase";
@@ -18,6 +19,7 @@ import {
   updateDoc,
   deleteDoc,
   orderBy,
+  where,
 } from "firebase/firestore";
 
 // DB의 todos 컬렉션 참조를 만들기. 잘못된 컬렉션 이름 사용을 방지.
@@ -28,11 +30,20 @@ const TodoList = () => {
   // 상태를 관리하는 useState 훅을 사용하여 할 일 목록과 입력값을 초기화합니다.
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState("");
+  const { data } = useSession();
 
   // firebase로 변경된 부분
   const getTodos = async () => {
     // firebase 쿼리 만들기
-    const q = query(todoCollection);
+    // const q = query(todoCollection);
+    // const q = query(todoCollection, orderBy("datetime", "desc"));
+    if (!data?.user?.name) return;
+
+    const q = query(
+      todoCollection,
+      where("userId", "==", data?.user?.id),
+      orderBy("datetime", "asc")
+    );
 
     // firebase에서 할 일 목록 조회하기
     const results = await getDocs(q);
@@ -49,7 +60,7 @@ const TodoList = () => {
 
   useEffect(() => {
     getTodos();
-  }, []);
+  }, [data]);
 
   //
 
@@ -63,6 +74,7 @@ const TodoList = () => {
       newDate.toLocaleDateString() + " " + newDate.toLocaleTimeString("en-GB");
 
     const docRef = await addDoc(todoCollection, {
+      userId: data?.user?.id,
       text: input,
       completed: false,
       datetime: postDate,
@@ -114,15 +126,15 @@ const TodoList = () => {
     );
   };
 
-  const sortTodos = (a, b) => {
-    return a.datetime.replace(/\D/g, "") - b.datetime.replace(/\D/g, "");
-  };
+  // const sortTodos = (a, b) => {
+  //   return a.datetime.replace(/\D/g, "") - b.datetime.replace(/\D/g, "");
+  // };
 
   // 컴포넌트를 렌더링합니다.
   return (
     <div className={styles.container}>
       <h1 className="text-xl mb-4 font-bold underline underline-offset-4 decoration-wavy">
-        Todo List
+        {data?.user?.name}'s Todo List
       </h1>
       {/* 할 일을 입력받는 텍스트 필드입니다. */}
       <input
@@ -142,7 +154,7 @@ const TodoList = () => {
       </div>
       {/* 할 일 목록을 렌더링합니다. */}
       <ul>
-        {[...todos].sort(sortTodos).map((todo) => (
+        {todos.map((todo) => (
           <TodoItem
             key={todo.id}
             todo={todo}

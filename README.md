@@ -6,7 +6,9 @@
 
 ---
 
-1. <span style="color:yellow"> 카카오톡 </span> 및 <span style="color:blue">구글</span> 로그인 구현
+1. <span style="color:yellow"> 카카오톡 </span> 및 <span style="color:blue">구글</span> 및 <span style="color:green">네이버</span> 로그인 구현
+   - 로그인 버튼들: <img src="./src/img/naver1.png">
+   - 네이버 로그인 화면: <img src="./src/img/naver2.png">
 2. "권혁범" 카카오 계정으로 로그인하였을 때만, '관리자 페이지로 가기'라는 버튼이 노출됨.
    - "권혁범"으로 로그인한 경우: <img src="./src/img/screenshot1.png">
    - 다른 계정으로 로그인한 경우:

@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from "react";
 import AdminTodoItem from "@/components/AdminTodoItem";
 import styles from "@/styles/AdminTodoList.module.css";
-import { signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 
 //firebase 관련 모듈 불러오기
 import { db } from "@/firebase";
@@ -28,6 +28,7 @@ const todoCollection = collection(db, "todos");
 const AdminTodoList = () => {
   // 상태를 관리하는 useState 훅을 사용하여 할 일 목록과 입력값을 초기화합니다.
   const [todos, setTodos] = useState([]);
+  const { data } = useSession();
 
   // firebase로 변경된 부분
   const getTodos = async () => {
@@ -52,10 +53,14 @@ const AdminTodoList = () => {
   }, []);
 
   // deleteTodo 함수는 할 일을 목록에서 삭제하는 함수입니다.
-  const deleteTodo = (id) => {
+  const deleteTodo = (id, userId) => {
     // 해당 id를 가진 할 일을 제외한 나머지 목록을 새로운 상태로 저장합니다.
-
     // firestore에서 해당 id를 가진 할 일 삭제하기
+    if (userId !== data?.user.id) {
+      alert("권한이 없습니다.");
+      return;
+    }
+
     const todoDoc = doc(todoCollection, id);
     deleteDoc(todoDoc);
 
@@ -83,10 +88,6 @@ const AdminTodoList = () => {
 
     setTodos(newTodos);
   };
-
-  // const sortTodos = (a, b) => {
-  //   return a.datetime.replace(/\D/g, "") - b.datetime.replace(/\D/g, "");
-  // };
 
   // 컴포넌트를 렌더링합니다.
   return (
@@ -117,7 +118,7 @@ const AdminTodoList = () => {
             key={todo.id}
             todo={todo}
             onToggle={() => toggleTodo(todo.id)}
-            onDelete={() => deleteTodo(todo.id)}
+            onDelete={() => deleteTodo(todo.id, todo.userId)}
           />
         ))}
       </ul>

@@ -38,9 +38,7 @@ const TodoList = () => {
     // const q = query(todoCollection);
     // const q = query(todoCollection, orderBy("datetime", "desc"));
     if (!data?.user?.name) return;
-    {
-      console.log(data?.user);
-    }
+
     const q = query(
       todoCollection,
       where("userId", "==", data?.user?.id),
@@ -56,7 +54,6 @@ const TodoList = () => {
       // id값을 firestore에 저장한 값으로 지정하고, 나머지를 newTodos 배열에 담기
       newTodos.push({ id: doc.id, ...doc.data() });
     });
-    console.log(newTodos);
     setTodos(newTodos);
   };
 
@@ -64,12 +61,11 @@ const TodoList = () => {
     getTodos();
   }, [data]);
 
-  //
-
   // addTodo 함수는 입력값을 이용하여 새로운 할 일을 목록에 추가하는 함수입니다.
   const addTodo = async () => {
     // 입력값이 비어있는 경우 함수를 종료합니다.
     if (input.trim() === "") return;
+
     // firestore에 추가한 할 일 저장하기.
     const newDate = new Date();
     const postDate =
@@ -82,11 +78,13 @@ const TodoList = () => {
       completed: false,
       datetime: postDate,
     });
+
     // id 값을 Firestore 에 저장한 값으로 지정합니다.
     setTodos([
       ...todos,
       {
         id: docRef.id,
+        userId: data?.user?.id,
         userName: docRef.name,
         text: input,
         completed: false,
@@ -102,7 +100,7 @@ const TodoList = () => {
     // 할 일 목록에서 해당 id를 가진 할 일의 완료 상태를 반전시킵니다.
     // firebase에서 추가된 부분
     const newTodos = todos.map((todo) => {
-      if (todo.id === id) {
+      if (todo.id === id && todo.userId === data?.user?.id) {
         // Firestore 에서 해당 id를 가진 할 일을 찾아 완료 상태를 업데이트합니다.
         const todoDoc = doc(todoCollection, id);
         updateDoc(todoDoc, { completed: !todo.completed });
@@ -116,18 +114,19 @@ const TodoList = () => {
   };
 
   // deleteTodo 함수는 할 일을 목록에서 삭제하는 함수입니다.
-  const deleteTodo = (id) => {
+  const deleteTodo = (id, userId) => {
     // 해당 id를 가진 할 일을 제외한 나머지 목록을 새로운 상태로 저장합니다.
-
     // firestore에서 해당 id를 가진 할 일 삭제하기
-    const todoDoc = doc(todoCollection, id);
-    deleteDoc(todoDoc);
+    if (userId === data?.user?.id) {
+      const todoDoc = doc(todoCollection, id);
+      deleteDoc(todoDoc);
 
-    setTodos(
-      todos.filter((todo) => {
-        return todo.id !== id;
-      })
-    );
+      setTodos(
+        todos.filter((todo) => {
+          return todo.id !== id;
+        })
+      );
+    }
   };
 
   // const sortTodos = (a, b) => {
@@ -177,7 +176,7 @@ const TodoList = () => {
             key={todo.id}
             todo={todo}
             onToggle={() => toggleTodo(todo.id)}
-            onDelete={() => deleteTodo(todo.id)}
+            onDelete={() => deleteTodo(todo.id, todo.userId)}
           />
         ))}
       </ul>

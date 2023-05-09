@@ -5,10 +5,10 @@
   이 컴포넌트는 `TodoList.js`에서 사용되어 할 일 목록을 구성합니다.
 */
 import React from "react";
-import styles from "@/styles/TodoList.module.css";
+import styles from "@/styles/AdminTodoList.module.css";
 
 // TodoItem 컴포넌트를 정의합니다.
-const TodoItem = ({ todo, onToggle, onDelete }) => {
+const AdminTodoItem = ({ todo, onToggle, onDelete }) => {
   // 각 할 일 항목을 렌더링합니다.
   return (
     <li className={styles.todoItem}>
@@ -27,13 +27,20 @@ const TodoItem = ({ todo, onToggle, onDelete }) => {
         className={styles.todoDate}
         style={{ textDecoration: todo.completed ? "line-through" : "none" }}
       >
-        등록 날짜: {todo.datetime}
+        작성일시: {todo.datetime}
+      </span>
+
+      <span
+        className={styles.todoAuthor}
+        style={{ textDecoration: todo.completed ? "line-through" : "none" }}
+      >
+        작성자: {todo.userName}
       </span>
 
       {/* 삭제 버튼을 렌더링하고, 클릭 시 onDelete 함수를 호출하여 해당 할 일을 삭제합니다. */}
       <button
         onClick={onDelete}
-        className="w-20 justify-self-end p-0.5 mb-15 bg-gray-500 text-white border border-gray-500 rounded hover:bg-white hover:text-gray-500"
+        className="w-10 justify-self-end p-0.5 mb-15 bg-gray-500 text-white border border-gray-500 rounded hover:bg-white hover:text-gray-500"
       >
         삭제
       </button>
@@ -42,4 +49,4 @@ const TodoItem = ({ todo, onToggle, onDelete }) => {
 };
 
 // TodoItem 컴포넌트를 내보냅니다.
-export default TodoItem;
+export default AdminTodoItem;

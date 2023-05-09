@@ -41,12 +41,13 @@ button.addButton:hover {
 .todoDate {
   font-size: 12px;
   margin-right: 10px;
-  background-color: rgba(234, 208, 222, 0.378);
+  margin-right: 10px;
+  background-color: rgba(150, 244, 172, 0.3);
 }
 
 .todoAuthor {
-  color: rgb(222, 36, 98);
+  color: green;
   font-size: 12px;
   margin-right: 10px;
-  background-color: rgba(234, 208, 222, 0.378);
+  background-color: rgba(150, 244, 172, 0.3);
 }

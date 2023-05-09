@@ -21,6 +21,7 @@ export default function Signin() {
           >
             Go to Home
           </button>
+
           <button
             className={`w-40
                       justify-self-center
@@ -35,7 +36,7 @@ export default function Signin() {
         </div>
       ) : (
         <div className="grid m-auto text-center">
-          <div className="m-4">Not signed in</div>
+          <div className="m-4 text-white">Not signed in</div>
           <button
             className={`w-40
                       justify-self-center

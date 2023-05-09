@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from "react";
 import TodoItem from "@/components/TodoItem";
 import styles from "@/styles/TodoList.module.css";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 
 //firebase 관련 모듈 불러오기
 import { db } from "@/firebase";
@@ -133,6 +133,20 @@ const TodoList = () => {
   // 컴포넌트를 렌더링합니다.
   return (
     <div className={styles.container}>
+      <div className="grid">
+        <button
+          className={`w-30 h-7 justify-self-end
+                      p-1 mb-4
+                      bg-gray-600
+                      text-white
+                      text-xs
+                      border border-gray-600 rounded
+                      hover:bg-white hover:text-gray-600`}
+          onClick={() => signOut()}
+        >
+          Sign out
+        </button>
+      </div>
       <h1 className="text-xl mb-4 font-bold underline underline-offset-4 decoration-wavy">
         {data?.user?.name}'s Todo List
       </h1>
